@@ -1,0 +1,30 @@
+--Only Show City names starting from A-J
+
+
+SELECT
+  DISTINCT dbr.region_name
+FROM `bigquery-public-data.covid19_italy.data_by_region` dbr
+WHERE 
+  LOWER(LEFT(dbr.region_name, 1)) IN ('a','b','c','d','e','f','g','h','i','j')
+  ORDER BY dbr.region_name
+
+
+
+-----------
+
+SELECT
+  DISTINCT dbr.region_name
+FROM `bigquery-public-data.covid19_italy.data_by_region` dbr
+WHERE 
+   dbr.region_name LIKE 'A%'
+      OR dbr.region_name LIKE 'B%'
+      OR dbr.region_name LIKE 'C%'
+      OR dbr.region_name LIKE 'D%'
+      OR dbr.region_name LIKE 'E%'
+      OR dbr.region_name LIKE 'F%'
+      OR dbr.region_name LIKE 'G%'
+      OR dbr.region_name LIKE 'H%'
+      OR dbr.region_name LIKE 'I%'
+      OR dbr.region_name LIKE 'J%'
+ORDER BY
+  1
