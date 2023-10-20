@@ -1,0 +1,39 @@
+WITH d1 AS ( --to get data 'yesterday'
+    SELECT 
+        DATE(P.date) AS date
+        , P.province_code 
+        , P.province_name 
+        , P.confirmed_cases AS d1_confirmed_cases -- renamed so later it will be easier to reference 
+    FROM 
+        bigquery-public-data.covid19_italy.data_by_province P 
+)
+
+
+, d0 AS ( -- to get data 'today'
+    SELECT 
+        DATE(P.date) AS date 
+        , P.province_code 
+        , P.province_name 
+        , P.confirmed_cases AS d0_confirmed_cases -- renamed so later it will be easier to reference 
+    FROM 
+        bigquery-public-data.covid19_italy.data_by_province P 
+) 
+
+
+SELECT 
+    d0.date 
+    , d0.province_code 
+    , d0.province_name 
+    , d1.d1_confirmed_cases -- yesterday's confirmed cases
+    , d0.d0_confirmed_cases 
+    , d0.d0_confirmed_cases - d1.d1_confirmed_cases AS case_increase -- case increase = total today - total yesterday
+FROM 
+    d0
+LEFT JOIN 
+    d1 
+    ON d0.date = (d1.date + 1) -- to make it 'yesterday', I join on today's date = yesterday's date + 1 
+                               -- For ex: today = 2021-01-02, if i want yesterday's data, the date join key must be jan 02. thus, 2021-01-01 + 1 = 2021-01-02, and the data from yesterday will be joined in this way 
+                               -- alternatively, you can do the day calculation in the subquery 
+    AND d0.province_code = d1.province_code -- join on province code 
+ORDER BY 
+    1 ASC, 2 ASC
