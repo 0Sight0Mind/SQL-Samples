@@ -1,0 +1,57 @@
+#Show the daily increase in cases for regions 10 and 25, for the monthts of November 2020 and February 2021
+SELECT 
+  DATE(dbr.date) as Date
+  , dbr.region_code
+  , dbr.region_name
+  , dbr.new_total_confirmed_cases
+FROM `bigquery-public-data.covid19_italy.data_by_region` dbr
+WHERE
+  dbr.region_code IN ('10','15')
+  AND (DATE(dbr.date) BETWEEN '2020-11-01' AND '2020-11-30'
+  OR DATE(dbr.date) BETWEEN '2021-02-01' AND '2021-02-28')
+ORDER BY dbr.region_code, DATE(dbr.date);
+
+
+#What is the min and max current case count per region? Only include days where there are more than 1 current case.
+SELECT
+   dbr.region_code
+  , dbr.region_name
+  , MIN(dbr.total_current_confirmed_cases) AS Min_total_current_confirmed_cases
+  , MAX(dbr.total_current_confirmed_cases) AS Max_total_current_confirmed_cases
+FROM `bigquery-public-data.covid19_italy.data_by_region` dbr
+WHERE
+  dbr.total_confirmed_cases > 1
+GROUP BY 
+  dbr.region_code, dbr.region_name
+
+
+#Get the average hospitalization rate per region per month. Order averages descending. Consider only days with > 10 current cases
+SELECT
+  DATE_TRUNC(dbr.date, MONTH) AS Month
+  , dbr.region_code
+  , dbr.region_name
+  , CONCAT(ROUND(AVG(dbr.total_hospitalized_patients / dbr.total_current_confirmed_cases) * 100, 2), '%') AS Avg_Hosp_Rate
+FROM `bigquery-public-data.covid19_italy.data_by_region` dbr
+WHERE
+  dbr.total_current_confirmed_cases > 10
+GROUP BY
+  1,2,3
+ORDER BY
+  Avg_Hosp_Rate DESC;
+
+
+
+#III. Show the average total current cases per month? Sort results per month, ascending 
+#Note: you can aggregate on the whole month by using DATE_TRUNC([date or timestamp column], PART). For ex: DATE_TRUNC(date, MONTH) will return the first day of the month for each date in the column. 
+SELECT 
+  EXTRACT(MONTH FROM DATE(nt.date)) as Month
+  , EXTRACT(YEAR FROM DATE(nt.date)) as Year
+  , AVG(nt.total_current_confirmed_cases) AS Avg_current_confirmed_cases
+FROM `bigquery-public-data.covid19_italy.national_trends` as nt
+GROUP BY
+  1,2
+ORDER BY
+  1,2;
+
+
+
