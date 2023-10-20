@@ -1,0 +1,51 @@
+#Get the total contribution of each region to the national testing numbers as of November 1 2021
+
+SELECT
+  DATE(dbr.date) AS Date
+  , dbr.region_code
+  , dbr.region_name
+  , dbr.tests_performed AS Region_Test
+  , nt.tests_performed AS National_Test
+  , ROUND(dbr.tests_performed/nt.tests_performed * 100, 2) AS Total_contrib
+FROM `bigquery-public-data.covid19_italy.data_by_region` dbr
+LEFT JOIN `bigquery-public-data.covid19_italy.national_trends` nt
+  ON dbr.date=nt.date
+WHERE 
+  DATE(dbr.date) = '2021-11-01';
+
+
+#Get the total contributions of each province to its regions total cases as of Jan 01 2021
+
+SELECT
+  DATE(p.date) AS Date
+  , p.name AS region_name
+  , p.region_code 
+  , p.province_name
+  , p.province_code
+  , p.confirmed_cases
+  , r.total_confirmed_cases
+  , ROUND(p.confirmed_cases/r.total_confirmed_cases * 100,2) AS Total_contrib
+FROM `bigquery-public-data.covid19_italy.data_by_province` p
+LEFT JOIN `bigquery-public-data.covid19_italy.data_by_region` r 
+  ON p.date=r.date
+    AND p.region_code=r.region_code
+WHERE
+  DATE(r.date) = '2021-01-01'
+ORDER BY
+  Total_contrib DESC;
+
+
+#How much did region 8 contribute in total testing for the month of February 2021?
+
+SELECT
+  DATE(r.date) AS Date
+  , r.region_code
+  , r.region_name
+  , r.tests_performed
+  , CONCAT(ROUND(r.tests_performed / n.tests_performed * 100,2),'%') AS Total_contrib
+FROM `bigquery-public-data.covid19_italy.data_by_region` r
+  LEFT JOIN `bigquery-public-data.covid19_italy.national_trends` n
+    ON r.date=n.date
+WHERE
+  r.region_code = '8'
+  AND DATE(r.date) BETWEEN '2021-02-01' and '2021-02-28';
