@@ -1,0 +1,90 @@
+#Part One: Conditionals 
+#I. What percentage of the total historical case increase did the increases from October 2020 to December 2020 make up (i.e. sum of October 2020 to December 2020 increase/sum of all increase). Show for each region. 
+
+SELECT
+  EXTRACT(MONTH FROM r.date) AS Month
+  , EXTRACT(YEAR FROM r.date) AS Year
+  , r.region_name
+  , r.region_code
+  , CONCAT(ROUND(SUM(r.new_total_confirmed_cases) / (SELECT SUM(r.new_total_confirmed_cases) FROM `bigquery-public-data.covid19_italy.data_by_region` r ) * 100,2),'%') AS Percentage
+FROM `bigquery-public-data.covid19_italy.data_by_region` r
+WHERE
+  DATE(r.date) BETWEEN '2020-10-01' AND '2020-12-31'
+GROUP BY
+  1,2,3,4
+ORDER BY
+  1,2,3;
+
+
+#II. Let Sector 1 = regions 1,2,3,4; Sector 2 = regions 5,6,7,8,9,10, Sector 3 = regions 11,12,13, Sector 4 = all other regions. Show each sector’s average increase in cases per month, from Jan 2021 to Oct 2021 
+#note: sectoring here is arbitrary and should not be a basis of any actual sectoring done in the real world 
+
+SELECT
+  EXTRACT(MONTH FROM r.date) AS Month
+  , EXTRACT(YEAR FROM r.date) AS Year
+  , CASE
+    WHEN r.region_code IN ('1','2','3','4') THEN 'Sector 1'
+    WHEN r.region_code IN ('5','6','7','8','9','10') THEN 'Sector 2'
+    WHEN r.region_code IN ('11','12','13') THEN 'Sector 3'
+    ELSE 'Sector 4'
+    END AS Sector
+  , ROUND(AVG(r.new_total_confirmed_cases),2) AS Avg_cases
+FROM `bigquery-public-data.covid19_italy.data_by_region` r 
+WHERE
+  DATE(r.date) BETWEEN '2021-01-01' AND '2021-10-31'
+GROUP BY
+  1,2,3
+ORDER BY
+  1,2,3
+
+#Part Two: Subqueries
+#I. Get total case increase (not the cumulative count) per province, per month. 	
+
+WITH DailyIncreases AS (
+SELECT
+  p.date
+  , p.province_name
+  , LAG(p.confirmed_cases, 1) OVER (PARTITION BY p.province_name ORDER BY date) AS prev_cases
+  , p.confirmed_cases AS current_cases
+  FROM
+    `bigquery-public-data.covid19_italy.data_by_province` p
+)
+
+SELECT
+  EXTRACT(MONTH FROM p.date) AS month
+  , EXTRACT(YEAR FROM p.date) AS year
+  , p.province_name
+  , SUM(GREATEST(current_cases - prev_cases, 0)) AS Total_case_increase
+FROM
+  DailyIncreases p
+GROUP BY
+  1,2,3
+ORDER BY
+  1,2,3;
+
+----------------------------------------
+
+WITH DailyIncreases AS (
+SELECT
+  p.date
+  , p.province_name
+  , LAG(p.confirmed_cases, 1) OVER (PARTITION BY p.province_name ORDER BY date) AS prev_cases
+  , p.confirmed_cases AS current_cases
+  FROM
+    `bigquery-public-data.covid19_italy.data_by_province` p
+)
+
+SELECT
+  EXTRACT(MONTH FROM p.date) AS month
+  , EXTRACT(YEAR FROM p.date) AS year
+  , p.province_name
+  , SUM(current_cases - prev_cases) AS Total_case_increase
+FROM
+  DailyIncreases p
+GROUP BY
+  1,2,3
+ORDER BY
+  1,2,3;
+
+
+
