@@ -1,0 +1,85 @@
+--IV. Which region had the highest contribution in total current national cases, as of October 31, 2021?    
+
+SELECT
+  Date(r.date) AS Date
+  ,r.region_name
+  ,r.region_code
+  ,CONCAT(ROUND(r.total_current_confirmed_cases / n.total_current_confirmed_cases * 100,2),'%') AS Total_current_contrib
+FROM `bigquery-public-data.covid19_italy.data_by_region` r
+LEFT JOIN `bigquery-public-data.covid19_italy.national_trends` n
+  ON r.date = n.date
+WHERE 
+  DATE(r.date) = '2021-10-31'
+ORDER BY
+  r.total_current_confirmed_cases / n.total_current_confirmed_cases * 100 DESC
+LIMIT 1;
+
+
+
+
+
+
+--V. Show the contribution of each province to the total regional cases, for each day. Only include days where total regional confirmed cases > 0.  
+SELECT DISTINCT
+  DATE(r.date) AS Date
+  , p.province_name
+  , p.province_code
+  , CONCAT(ROUND(p.confirmed_cases / r.total_confirmed_cases * 100,2),'%') AS Total_contrib
+FROM `bigquery-public-data.covid19_italy.data_by_province` p
+LEFT JOIN `bigquery-public-data.covid19_italy.data_by_region` r
+  ON p.region_code = r.region_code
+  AND p.date = r.date
+WHERE
+  r.total_confirmed_cases > 0
+ORDER BY
+  1,2;
+
+
+
+
+--VI. Which province had the highest contribution to total national cases, for November 01, 2021? 
+SELECT
+  DATE(p.date) AS Date
+  , p.province_name
+  , p.province_code
+  , CONCAT(ROUND(p.confirmed_cases / n.total_confirmed_cases * 100,2),'%') AS Total_contrib
+FROM `bigquery-public-data.covid19_italy.data_by_province` p 
+LEFT JOIN `bigquery-public-data.covid19_italy.national_trends` n   
+  ON p.date = n.date
+WHERE
+  DATE(p.date) = '2021-11-01'
+ORDER BY
+  p.confirmed_cases / n.total_confirmed_cases * 100 DESC
+LIMIT 1;
+
+
+--VII. For October 10,2021, show the contribution of each province to regional and national total cases. Exclude any instances where there is no match in region. 
+SELECT DISTINCT
+  DATE(p.date) AS Date
+  , p.province_name
+  , p.province_code
+  , CONCAT(ROUND(p.confirmed_cases / r.total_confirmed_cases * 100,2),'%') AS Total_contrib_to_region
+  , CONCAT(ROUND(p.confirmed_cases / n.total_confirmed_cases * 100,2),'%') AS Total_contrib_to_national
+FROM `bigquery-public-data.covid19_italy.data_by_province` p
+INNER JOIN `bigquery-public-data.covid19_italy.data_by_region` r
+  ON p.region_code = r.region_code
+  AND p.date = r.date
+LEFT JOIN `bigquery-public-data.covid19_italy.national_trends` n
+  ON p.date = n.date
+WHERE
+  DATE(p.date) = '2021-10-10'
+  AND r.total_confirmed_cases != 0
+  AND n.total_confirmed_cases != 0
+ORDER BY
+  2;
+
+
+
+
+
+
+
+
+
+
+
