@@ -1,0 +1,10 @@
+#Odd or Even Months
+SELECT
+  DATE(R.date) AS date
+  , R.region_code
+  , R.new_current_confirmed_cases
+FROM bigquery-public-data.covid19_italy.data_by_region R
+WHERE
+  MOD(CAST(EXTRACT(MONTH from R.date) AS INT64), 2)!=0
+  -- MOD(CAST(EXTRACT(MONTH from R.date) AS INT64), 2)=0 for EVEN NUMBERS
+  -- MOD(CAST(EXTRACT(MONTH from R.date) AS INT64), 2)!0 for ODD NUMBERS
