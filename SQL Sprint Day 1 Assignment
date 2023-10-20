@@ -1,0 +1,65 @@
+#Which day had the highest positivity rate in the month of December 2020, for Toscana (9)
+#Positivity rate = total cases/total performed
+
+SELECT 
+    DATE(dbr.date) AS Date
+  , dbr.region_name
+  , dbr.region_code 
+  , CONCAT(ROUND(dbr.total_confirmed_cases / dbr.tests_performed * 100),2,'%') AS Positivity_Rate
+FROM `bigquery-public-data.covid19_italy.data_by_region` dbr
+WHERE 
+  dbr.region_name = 'Toscana' 
+  AND DATE(dbr.date) BETWEEN '2020-12-01' AND '2020-12-31'
+ORDER BY 
+  Positivity_Rate desc
+LIMIT 
+  1;
+
+
+#Which days registered the highest increase of current confirmed cases. Consider June 2020, October 2020, December 2020, and March 2021, in Sicilia (19) and Basilicata (17) only.
+SELECT 
+  DATE(dbr.date) AS Date
+, dbr.region_name
+, dbr.region_code
+, dbr.new_current_confirmed_cases
+FROM `bigquery-public-data.covid19_italy.data_by_region` dbr
+WHERE 
+  dbr.region_code IN ('17','19')
+  AND (DATE(dbr.date) BETWEEN DATE '2020-06-01' AND '2020-06-30' 
+    OR DATE(dbr.date) BETWEEN '2020-10-01' AND '2020-10-30'
+    OR DATE(dbr.date) BETWEEN '2020-12-01' AND '2020-12-31'
+    OR DATE(dbr.date) BETWEEN '2021-03-01' AND '2021-03-31')
+ORDER BY dbr.new_current_confirmed_cases DESC;
+
+
+
+#Which days and regions had a negative increase in current confirmed cases? Consider only region names that start with the letter ‘P’, and January 01 – October 25 for both years 2020 and 2021 only. Sort output by date 
+SELECT
+  DATE(dbr.date) AS Date
+  , dbr.region_code
+  , dbr.region_name
+  , dbr.new_current_confirmed_cases
+FROM `bigquery-public-data.covid19_italy.data_by_region` dbr
+WHERE
+  dbr.region_name LIKE 'P%'
+  AND new_current_confirmed_cases < 0
+  AND (DATE(dbr.date) BETWEEN '2020-01-01' AND '2020-10-25'
+    OR DATE(dbr.date) BETWEEN '2021-01-01' AND '2021-10-25')
+ORDER BY 
+  DATE(dbr.date);
+
+
+#From your answer in the previous question (i.e. using the same columns and conditions), which day and region registered the lowest case count? Adjust your query accordingly
+SELECT
+  DATE(dbr.date) AS DATE
+  , dbr.region_code
+  , dbr.region_name
+  , dbr.new_current_confirmed_cases
+FROM `bigquery-public-data.covid19_italy.data_by_region` dbr
+WHERE
+  dbr.region_name LIKE 'P%'
+  AND new_current_confirmed_cases < 0
+  AND (DATE(dbr.date) BETWEEN '2020-01-01' AND '2020-10-25'
+    OR DATE(dbr.date) BETWEEN '2021-01-01' AND '2021-10-25')
+ORDER BY dbr.new_current_confirmed_cases
+LIMIT 1;
