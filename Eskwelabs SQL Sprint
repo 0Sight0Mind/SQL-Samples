@@ -1,0 +1,189 @@
+#Show total running confirmed cases for province code  880 and 98
+SELECT  
+  date(p.date)
+  , p.confirmed_cases
+  , p.province_code
+  , p.province_name
+  , p.name AS region_name
+  , p.region_code
+FROM `bigquery-public-data.covid19_italy.data_by_province` p
+WHERE p.province_code IN ('880', '98');
+
+
+#Show the daily increase in cases for regions 8 and 19, for the months of October 2020 and Feb 2021
+SELECT
+  dr.date
+  , dr.region_code
+  , dr.region_name
+  , dr.new_total_confirmed_cases
+FROM `bigquery-public-data.covid19_italy.data_by_region` dr
+WHERE
+  dr.region_code IN ('8','19') AND
+  DATE(dr.date) BETWEEN DATE('2020-10-01') AND DATE('2020-10-31') OR
+  DATE(dr.date) BETWEEN DATE('2021-02-01') AND DATE('2020-02-28');
+
+
+#Which days had the highest recorded total case increase (national level). Limit results to 5
+SELECT  
+  DATE(nt.date) AS Date
+  , nt.new_total_confirmed_cases AS Total_Confirmed_Cases
+FROM `bigquery-public-data.covid19_italy.national_trends` nt
+ORDER BY 
+  nt.new_total_confirmed_cases DESC
+LIMIT 
+  5
+
+
+#Which region recorded the highest fatality rate (use cumulative figures), as of September 30, 2021
+SELECT
+  DATE(dbr.date) as Date
+  , dbr.region_code
+  , dbr.region_name
+  , ROUND(dbr.deaths / dbr.total_confirmed_cases * 100,2) AS Fatality_rate
+FROM `bigquery-public-data.covid19_italy.data_by_region` dbr
+WHERE
+  DATE(Date) = DATE('2021-09-30')
+  ORDER BY Fatality_rate desc
+LIMIT 
+  1
+
+#Get the daily positivity rate for each region. Show data only for October 20, 2020 – October 25, 2020 and order results by date then by region name. 
+#positivity rate = total cases/ total tests 
+SELECT
+  EXTRACT(MONTH FROM DATE(dbr.date)) AS Month
+  , dbr.region_name
+  , CONCAT(ROUND(dbr.total_confirmed_cases / dbr.tests_performed * 100,2),'%') AS Positivity_Rate
+FROM `bigquery-public-data.covid19_italy.data_by_region` dbr
+WHERE
+  DATE(Date) BETWEEN DATE('2020-10-20') AND DATE('2020-10-25')
+ORDER BY 
+  Positivity_Rate, Date;
+
+
+#Show the total confirmed cases for each province in Veneto (5), for Nov 30, 2020,  Dec 31, 2020 and Jan 31, 2021 only 
+SELECT
+  DATE(dbp.date) AS Date
+  , dbp.region_code
+  , dbp.name AS Region_name
+  , dbp.province_name
+  , dbp.confirmed_cases
+FROM `bigquery-public-data.covid19_italy.data_by_province` dbp
+WHERE dbp.region_code = '5' 
+  AND (DATE(dbp.date) = '2020-11-30' 
+  OR DATE(dbp.date) = '2020-12-31'
+  OR DATE(dbp.date) = '2021-01-31')
+ORDER BY 
+  DATE(dbp.date) asc, dbp.confirmed_cases desc;
+
+
+
+#How many DISTINCT provinces are there? */ 
+SELECT DISTINCT
+    P.province_name
+FROM `bigquery-public-data.covid19_italy.data_by_province` P;
+
+
+#What is the daily national positivity rate? Positivity rate = total confirmed cases/tests performed*/
+SELECT
+  N.date
+  , N.total_confirmed_cases
+  , N.tests_performed
+  , N.total_confirmed_cases/N.tests_performed AS pos_rate
+FROM `bigquery-public-data.covid19_italy.national_trends` N;
+
+
+#Show the daily running total of cases in province 880 and 98. Show the corresponding region as well*/
+SELECT
+    P.date
+    , P.confirmed_cases
+    , P.province_code
+    , P.province_name
+    , P.name AS region_name
+    , P.region_code
+FROM `bigquery-public-data.covid19_italy.data_by_province` P
+WHERE
+    P.province_code IN ('880','98');
+
+#Show the daily increase in total cases on a national level, from December 01 2020 to January 31 2021 */ 
+SELECT
+    N.date
+    , N.total_confirmed_cases
+FROM `bigquery-public-data.covid19_italy.national_trends` N
+WHERE
+    DATE(N.date) BETWEEN DATE('2020-12-01') AND DATE('2021-01-31');
+
+
+#Show the running total of tests performed in region 14 as of December 31,2020 */
+SELECT
+    R.date
+    , R.tests_performed
+    , R.region_code
+    , R.region_name   
+FROM `bigquery-public-data.covid19_italy.data_by_region` R
+WHERE
+    R.region_code = '14' AND
+    DATE(R.date) = DATE('2020-12-31');
+
+
+#Show the daily increase in cases for regions 8 and 19, for the months of October 2020 and Feb 2021
+SELECT
+    R.date 
+    , R.region_code 
+    , R.region_name 
+    , R.new_total_confirmed_cases
+FROM `bigquery-public-data.covid19_italy.data_by_region` R 
+WHERE
+    R.region_code IN ('8','19') AND
+    (DATE(R.date) BETWEEN DATE('2020-10-01') AND DATE('2020-10-31')
+    OR DATE(R.date) BETWEEN DATE('2021-02-01') AND DATE('2021-02-28'));
+
+
+#Which days had the highest recorded total case increase (national level). Limit results to 5
+SELECT
+    DATE(N.date) AS date -- 1
+    , N.new_total_confirmed_cases -- 2
+FROM `bigquery-public-data.covid19_italy.national_trends` N 
+ORDER BY
+    2 DESC
+LIMIT 
+    5;
+
+#Which region recorded the highest fatality rate (use cumulative figures), as of September 30, 2021? */ 
+--NOTE: deaths / total_confirmed_cases
+
+SELECT
+    DATE(R.date) AS date --1
+    , R.region_code --2
+    , R.region_name -- 3
+    , R.deaths/R.total_confirmed_cases AS fatality_rate -- 4
+FROM `bigquery-public-data.covid19_italy.data_by_region` R 
+WHERE
+    DATE(R.date) = DATE('2021-09-30')
+ORDER BY
+    4
+LIMIT
+    1;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
