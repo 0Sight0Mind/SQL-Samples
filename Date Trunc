@@ -1,0 +1,8 @@
+SELECT
+  dbr.date AS datetime
+  , DATE_TRUNC(dbr.date, YEAR) AS Year -- truncates to start of the year
+  , DATE_TRUNC(dbr.date, QUARTER) AS Quarter -- truncates to start of the quarter
+  , DATE_TRUNC(dbr.date, MONTH) AS Month -- truncates to start of the month
+  , DATE_TRUNC(dbr.date, DAY) AS Day -- truncates to start of the week
+
+FROM `bigquery-public-data.covid19_italy.data_by_region` as dbr
