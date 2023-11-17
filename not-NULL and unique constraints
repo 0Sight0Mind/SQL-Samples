@@ -1,0 +1,27 @@
+#When creating a table
+CREATE TEABLE studens(
+  ssn integer NOT NULL,
+  lastname VARCHAR(64) NOT NULL,
+  home_phone INTEGER,
+  office_phone INTEGER
+);
+
+#After the table has been created
+ALTER TABLE students
+ALTER COLUMN home_phone
+SET NOT NULL;
+
+#Removing a not null
+ALTER TABLE students
+ALTER COLUMN ssn
+DROP NOT NULL;
+
+
+
+#Add a unique constraints
+CREATE TABLE table_name(
+  column_name UNIQUE
+);
+
+ALTER TABLE table_name
+ADD CONSTRAINT some_name UNIQUE(column_name);
