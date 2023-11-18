@@ -42,3 +42,27 @@ DROP COLUMN firstname;
 -- Drop the lastname column
 ALTER TABLE affiliations
 DROP COLUMN lastname;
+
+
+-------
+-- Dealing with violations
+CREATE TABLE a (
+  id INTEGER PRIMARY KEY,
+  column_a VARCHAR(64),
+  ...,
+  b_id  INTEGER REFERENCES B (id) ON DELETE NO ACTION
+);
+
+CREATE TABLE a (
+  id INTEGER PRIMARY KEY,
+  column_a VARCHAR(64),
+  ...,
+  b_id  INTEGER REFERENCES B (id) ON DELETE CASCADE
+);
+
+ 
+-- NO ACTION: Throw an error
+-- CASCADE: Delete all referencing records
+-- RESTRICT: Throw an error
+-- SET NULL: Set the referencing column to NULL
+-- SET DEFAULT: Set the referencing column to its default value
