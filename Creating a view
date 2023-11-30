@@ -39,7 +39,7 @@ GRANT INSERT, UPDATE ON long_reviews TO editor;
 
 ------------------------
 
-SAMPLE:
+SAMPLE 1:
 
 -- Create a view with the top artists in 2017
 CREATE VIEW top_artists_2017 AS
@@ -50,3 +50,19 @@ ON artist_title.reviewid = top_15_2017.reviewid;
 
 -- Output the new view
 SELECT * FROM top_artists_2017;
+
+
+
+-----------------------
+
+SAMPLE 2:
+-- Redefine the artist_title view to have a label column
+CREATE OR REPLACE VIEW artist_title AS
+SELECT reviews.reviewid, reviews.title, artists.artist, labels.label
+FROM reviews
+INNER JOIN artists
+ON artists.reviewid = reviews.reviewid
+INNER JOIN labels
+ON labels.reviewid = reviews.reviewid;
+
+SELECT * FROM artist_title;
