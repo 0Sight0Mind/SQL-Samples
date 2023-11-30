@@ -26,3 +26,7 @@ INNER JOIN labels ON high_scores.reviewid = labels.reviewid
 WHERE label = 'self-released';
 
 
+#Granting and revoking example
+GRANT UPDATE ON ratings TO public;
+
+REVOKE INSERT ON films FROM db_user;
