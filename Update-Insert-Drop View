@@ -1,0 +1,16 @@
+#Updating a view
+UPDATE films SET kind = 'Dramatic' WHERE kind = 'Drama';
+
+#Insert into a view
+INSERT INTO films(code, title, did, date_prod, kind)
+  VALUES('T_601', 'Yojimbo', 106, '1961-16-16', 'Drama');
+
+#Dropping a view
+#RESTRICT(default: returns an error if there are obj. that depend on the view
+#CASCADE: drops view and any obj. that depends on that view
+
+DROP VIEW view_name[CASCADE | RESTRICT];
+
+#Redefining a view
+CREATE OR replace VIEW view_name AS new_query
+
