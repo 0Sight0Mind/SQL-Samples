@@ -1,5 +1,5 @@
 #When creating a table
-CREATE TEABLE studens(
+CREATE TABLE students(
   ssn integer NOT NULL,
   lastname VARCHAR(64) NOT NULL,
   home_phone INTEGER,
