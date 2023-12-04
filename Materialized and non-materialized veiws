@@ -1,0 +1,6 @@
+#Implementing materialized views (PostgreSQL)
+
+CREATE materialized VIEW my_mv AS SELECT * FROM table;
+
+refresh materialized VIEW my_mv;
+
