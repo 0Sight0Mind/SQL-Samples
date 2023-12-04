@@ -1,0 +1,37 @@
+#Create a role
+--Empty Role
+CREATE ROLE data_analyst;
+
+--Roles with some attributes set
+#Intern who will work until end of year
+CREATE ROLE intern WITH password 'Passwordforintern' VALID UNTIL '2020-01-01';
+
+#admin
+CREATE ROLE admin CREATEDB;
+
+#Change role
+ALTER ROLE admin CREATEROLE;
+
+--Give Marta's role a password
+ALTER ROLE marta WITH password 's3cur3p@ssw0rd';
+
+
+#GRANT and REVOKE privileges from roles
+--Grant table privileges
+GRANT UPDATE ON ratings TO data_analyst;
+
+-- Grant data_scientist update and insert privileges
+GRANT UPDATE, INSERT ON long_reviews TO data_scientist;
+
+--Revoke table privileges
+REVOKE UPDATE ON ratings FROM data_analyst;
+
+#Available priveleges in PostgreSQL are:
+SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER, CREATE, CONNECT, TEMPORARY, EXECUTE, USAGE
+
+
+#Add user role to the group role
+GRANT data_analyst TO intern;
+
+#Revoke user role access to the group role
+REVOKE data_analyst FROM alex;
