@@ -6,3 +6,10 @@ SELECT
 	LAG(quantity, 1) OVER() AS pre_quantity
 FROM orders
 ORDER BY order_id;
+
+
+
+SELECT *, 
+       Lag(JoiningDate, 1,'1999-09-01') OVER(
+       ORDER BY JoiningDate ASC) AS EndDate
+FROM @Employee;
