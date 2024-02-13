@@ -1,0 +1,5 @@
+SPLIT_PART(str, delimiter, position)
+
+#e.g.
+
+SPLIT_PART('30.11.1989', ., 3)
