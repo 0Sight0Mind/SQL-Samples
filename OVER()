@@ -1,3 +1,15 @@
 SELECT * , COUNT(*) OVER (PARTITION BY sectionName) AS studentStrength
 FROM studentsSectionWise
 ORDER BY sectionName
+
+
+
+#Let’s check the running section wise Average,, section wise Highest and section wise Least using the OVER with PARTITION and ORDER subclause.
+
+Query:
+
+SELECT * , AVG(studentMarks) OVER (PARTITION BY sectionName ORDER BY studentMarks) AS sectionAverage,
+MAX(studentMarks) OVER (PARTITION BY sectionName ORDER BY studentMarks) AS sectionHighest,
+MIN(studentMarks) OVER (PARTITION BY sectionName ORDER BY studentMarks) AS sectionLeast
+FROM studentsSectionWise
+ORDER BY sectionName
